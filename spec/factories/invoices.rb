@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :invoice do
-    customer { nil }
-    merchant { nil }
-    status { "MyText" }
+    merchant
+    customer
+    status { Faker::StarWars.call_number }
   end
 end
