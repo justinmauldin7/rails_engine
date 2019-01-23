@@ -6,3 +6,10 @@ desc "Imports customers into table"
       Customer.create!(row.to_h)
     end
 end
+
+desc "Imports merchants into table"
+  task :merchant_import => :environment do
+    CSV.foreach('./lib/data/merchants.csv', :headers => true) do |row|
+      Merchant.create!(row.to_h)
+    end
+end
