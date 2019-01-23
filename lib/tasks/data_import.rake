@@ -27,3 +27,10 @@ desc "Imports items into table"
       Item.create!(row.to_h)
     end
 end
+
+desc "Imports invoice_items into table"
+  task :invoice_items_import => :environment do
+    CSV.foreach('./lib/data/invoice_items.csv', :headers => true) do |row|
+      InvoiceItem.create!(row.to_h)
+    end
+end
