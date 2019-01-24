@@ -26,8 +26,6 @@ describe "Merchants API" do
   end
 
   it "sends a list of merchants" do
-    create_list(:merchant, 3)
-
     get '/api/v1/merchants'
 
     expect(response).to be_successful
@@ -38,7 +36,7 @@ describe "Merchants API" do
   end
 
   it "can return one merchant by its id" do
-    id = create(:merchant).id
+    id = @merchant_1.id
 
     get "/api/v1/merchants/#{id}"
 
