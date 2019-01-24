@@ -6,6 +6,10 @@ Rails.application.routes.draw do
       resources :customers, only: [:index, :show]
       resources :merchants, only: [:index, :show]
       resources :items, only: [:index, :show]
+
+      namespace :merchants do
+        get 'most_revenue', to: "most_revenue#index"
+      end
     end
   end
 end
