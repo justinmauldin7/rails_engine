@@ -155,6 +155,20 @@ describe "Merchants API" do
     expect(merchants[2]["id"].to_i).to eq(merchant_3.id)
   end
 
+  xit "can reutn list of items for one merchant" do
+    item_2 = create(:item, merchant_id: @merchant_1.id, unit_price: 100)
+    item_3 = create(:item, merchant_id: @merchant_1.id, unit_price: 100)
+
+    get "/api/v1/merchants/#{@merchant_1.id}/items"
+
+    items = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(items.count).to eq(3)
+    expect(items[0]["id"].to_i).to eq(item_1.id)
+    expect(items[1]["id"].to_i).to eq(item_2.id)
+    expect(items[2]["id"].to_i).to eq(item_3.id)
+  end
 
   it "can return top merchants with most revenue" do
     number = 2
@@ -167,5 +181,20 @@ describe "Merchants API" do
     expect(merchants.count).to eq(number)
     expect(merchants.first["id"].to_i).to eq(@merchant_1.id)
     expect(merchants.last["id"].to_i).to eq(@merchant_2.id)
+  end
+
+  it "can return top merchants with x number of items sold" do
+    number = 2
+    create_list(:item, 3, merchant_id: @merchant_1.id, unit_price: 100)
+    create(:item, merchant_id: @merchant_3.id, unit_price: 100)
+
+    get "/api/v1/merchants/most_items?quantity=#{number}"
+
+    merchants = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(merchants.count).to eq(number)
+    expect(merchants.first["id"].to_i).to eq(@merchant_1.id)
+    expect(merchants.last["id"].to_i).to eq(@merchant_3.id)
   end
 end
