@@ -26,7 +26,7 @@ RSpec.describe Merchant, type: :model do
 
       @invoice_1 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_1.id)
       @invoice_item_1 = create(:invoice_item, item_id: @item_1.id, invoice_id: @invoice_1.id, quantity: 1, unit_price: 100)
-      @invoice_item_2 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_1.id, quantity: 5, unit_price: 200)
+      @invoice_item_2 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_1.id, quantity: 10, unit_price: 200)
       @invoice_item_3 = create(:invoice_item, item_id: @item_3.id, invoice_id: @invoice_1.id, quantity: 10, unit_price: 300)
       @transaction_1 = create(:transaction, invoice_id: @invoice_1.id)
       @transaction_2 = create(:transaction, invoice_id: @invoice_1.id)
@@ -41,17 +41,25 @@ RSpec.describe Merchant, type: :model do
 
       @invoice_3 = create(:invoice, merchant_id: @merchant_3.id, customer_id: @customer_3.id)
       @invoice_item_7 = create(:invoice_item, item_id: @item_1.id, invoice_id: @invoice_3.id, quantity: 1, unit_price: 100)
-      @invoice_item_8 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_3.id, quantity: 5, unit_price: 200)
+      @invoice_item_8 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_3.id, quantity: 50, unit_price: 200)
       @transaction_5 = create(:transaction, invoice_id: @invoice_3.id)
       @transaction_6 = create(:transaction, invoice_id: @invoice_3.id)
     end
 
-    it "most_revenue" do
+    it ".most_revenue" do
       number = 2
       merchants = Merchant.most_revenue(number)
 
-      expect(merchants[0]).to eq(@merchant_1)
-      expect(merchants[1]).to eq(@merchant_2)
+      expect(merchants[0]).to eq(@merchant_3)
+      expect(merchants[1]).to eq(@merchant_1)
+    end
+
+    it ".most_items" do
+      number = 2
+      merchants = Merchant.most_items(number)
+
+      expect(merchants[0]).to eq(@merchant_3)
+      expect(merchants[1]).to eq(@merchant_1)
     end
   end
 end
