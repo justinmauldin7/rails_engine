@@ -206,4 +206,15 @@ describe "Merchants API" do
     expect(response).to be_successful
     expect(total_revenue["attributes"]["total_revenue"].to_i).to eq(284.00)
   end
+
+  it "can return total revenue for single merchant" do
+    id = @merchant_1.id
+
+    get "/api/v1/merchants/#{id}/revenue"
+
+    total_revenue = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(total_revenue["attributes"]["total_revenue"].to_i).to eq(386)
+  end
 end
