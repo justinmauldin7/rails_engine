@@ -99,51 +99,62 @@ describe "Merchants API" do
     expect(merchant["attributes"]["id"]).to eq(merchant_1.id)
   end
 
-  # it "can find all merchants by id" do
-  #   get "/api/v1/merchants/find_all?id=#{@merchant_1.id}"
-  #
-  #   merchants = JSON.parse(response.body)["data"]
-  #
-  #   expect(response).to be_successful
-  #   expect(merchants.count).to eq(3)
-  #   expect(merchants.first["id"].to_i).to eq(@merchant_1.id)
-  # end
+  it "can find all merchants by id" do
+    get "/api/v1/merchants/find_all?id=#{@merchant_1.id}"
 
-  # it "can find all merchants by name" do
-  #   get "/api/v1/merchants/find_all?name=#{@merchant_1.name}"
-  #
-  #   merchants = JSON.parse(response.body)["data"]
-  #
-  #   expect(response).to be_successful
-      #expect(merchants.count).to eq(3)
-  #   expect(merchants.first["attributes"]["name"]).to eq(@merchant_1.name)
-  # end
-  #
-  # it "can find first merchant by created_at" do
-  #   date = "2012-03-27 14:54:00 UTC"
-  #   merchant_1 = create(:merchant, created_at: date)
-  #
-  #   get "/api/v1/merchants/find_all?created_at=#{date}"
-  #
-  #   merchants = JSON.parse(response.body)["data"]
-  #
-  #   expect(response).to be_successful
-      #expect(merchants.count).to eq(3)
-  #   expect(merchants.first["attributes"]["id"]).to eq(merchant_1.id)
-  # end
-  #
-  # it "can find first merchant by updated_at" do
-  #   date = "2012-03-27 14:54:00 UTC"
-  #   merchant_1 = create(:merchant, updated_at: date)
-  #
-  #   get "/api/v1/merchants/find_all?updated_at=#{date}"
-  #
-  #   merchants = JSON.parse(response.body)["data"]
-  #
-  #   expect(response).to be_successful
-      #expect(merchants.count).to eq(3)
-  #   expect(merchants.first["attributes"]["id"]).to eq(merchant_1.id)
-  # end
+    merchant = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(merchant.count).to eq(1)
+  end
+
+  it "can find all merchants by name" do
+    create(:merchant, name: "Merchant One")
+
+    get "/api/v1/merchants/find_all?name=#{@merchant_1.name}"
+
+    merchants = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(merchants.count).to eq(2)
+    expect(merchants[0]["attributes"]["name"]).to eq(@merchant_1.name)
+    expect(merchants[1]["attributes"]["name"]).to eq(@merchant_1.name)
+  end
+
+  it "can find first merchant by created_at" do
+    date = "2012-03-27 14:54:00 UTC"
+    merchant_1 = create(:merchant, created_at: date)
+    merchant_2 = create(:merchant, created_at: date)
+    merchant_3 = create(:merchant, created_at: date)
+
+    get "/api/v1/merchants/find_all?created_at=#{date}"
+
+    merchants = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(merchants.count).to eq(3)
+    expect(merchants[0]["id"].to_i).to eq(merchant_1.id)
+    expect(merchants[1]["id"].to_i).to eq(merchant_2.id)
+    expect(merchants[2]["id"].to_i).to eq(merchant_3.id)
+  end
+
+  it "can find first merchant by updated_at" do
+    date = "2012-01-2 14:54:00 UTC"
+    merchant_1 = create(:merchant, updated_at: date)
+    merchant_2 = create(:merchant, updated_at: date)
+    merchant_3 = create(:merchant, updated_at: date)
+
+    get "/api/v1/merchants/find_all?updated_at=#{date}"
+
+    merchants = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(merchants.count).to eq(3)
+    expect(merchants[0]["id"].to_i).to eq(merchant_1.id)
+    expect(merchants[1]["id"].to_i).to eq(merchant_2.id)
+    expect(merchants[2]["id"].to_i).to eq(merchant_3.id)
+  end
+
 
   it "can return top merchants with most revenue" do
     number = 2
