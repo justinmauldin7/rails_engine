@@ -229,4 +229,24 @@ describe "Merchants API" do
     expect(response).to be_successful
     expect(revenue["attributes"]["revenue"].to_i).to eq(284.00)
   end
+
+  it "can finde the customer that has the most successful transactions for a merchant" do
+    invoice_2 = create(:invoice, merchant_id: @merchant_3.id, customer_id: @customer_2.id, created_at: "2012-03-27 14:54:00 UTC")
+    invoice_item_4 = create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_2.id, quantity: 1, unit_price: 100)
+    invoice_item_5 = create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_2.id, quantity: 5, unit_price: 200)
+    invoice_item_6 = create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_2.id, quantity: 10, unit_price: 300)
+    transaction_3 = create(:transaction, invoice_id: invoice_2.id)
+    transaction_4 = create(:transaction, invoice_id: invoice_2.id)
+    transaction_5 = create(:transaction, invoice_id: invoice_2.id)
+    transaction_6 = create(:transaction, invoice_id: invoice_2.id)
+
+    id = @merchant_3.id
+
+    get "/api/v1/merchants/#{id}/favorite_customer"
+
+    customer = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(customer["attributes"]["id"].to_i).to eq(@customer_2.id)
+  end
 end
