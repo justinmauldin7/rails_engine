@@ -37,4 +37,14 @@ class Merchant < ApplicationRecord
            .where('transactions.result = ?', 'success')
            .sum('invoice_items.unit_price * invoice_items.quantity')
   end
+
+  def single_revenue_by_day(day)
+    day_start = day + " 00:00:00 UTC"
+    day_end = day + " 23:59:59 UTC"
+
+    Merchant.joins(invoices: [:invoice_items, :transactions])
+           .where('transactions.result = ?', 'success')
+           .where('invoices.created_at BETWEEN ? AND ?', day_start, day_end)
+           .sum('invoice_items.unit_price * invoice_items.quantity')
+  end
 end
