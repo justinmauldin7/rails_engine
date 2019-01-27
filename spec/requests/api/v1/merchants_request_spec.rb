@@ -217,4 +217,16 @@ describe "Merchants API" do
     expect(response).to be_successful
     expect(total_revenue["attributes"]["total_revenue"].to_i).to eq(386)
   end
+
+  it "can return total revenue for single merchant for specific date" do
+    id = @merchant_1.id
+    date = "2012-03-27"
+
+    get "/api/v1/merchants/#{id}/revenue?date=#{date}"
+
+    total_revenue = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(total_revenue["attributes"]["total_revenue"].to_i).to eq(284.00)
+  end
 end
