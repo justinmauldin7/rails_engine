@@ -16,7 +16,7 @@ describe "Merchants API" do
 
     @invoice_1 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_1.id)
     @invoice_item_1 = create(:invoice_item, item_id: @item_1.id, invoice_id: @invoice_1.id, quantity: 1, unit_price: 100)
-    @invoice_item_2 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_1.id, quantity: 5, unit_price: 200)
+    @invoice_item_2 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_1.id, quantity: 10, unit_price: 200)
     @invoice_item_3 = create(:invoice_item, item_id: @item_3.id, invoice_id: @invoice_1.id, quantity: 10, unit_price: 300)
     @transaction_1 = create(:transaction, invoice_id: @invoice_1.id)
     @transaction_2 = create(:transaction, invoice_id: @invoice_1.id)
@@ -31,7 +31,7 @@ describe "Merchants API" do
 
     @invoice_3 = create(:invoice, merchant_id: @merchant_3.id, customer_id: @customer_3.id)
     @invoice_item_7 = create(:invoice_item, item_id: @item_1.id, invoice_id: @invoice_3.id, quantity: 1, unit_price: 100)
-    @invoice_item_8 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_3.id, quantity: 5, unit_price: 200)
+    @invoice_item_8 = create(:invoice_item, item_id: @item_2.id, invoice_id: @invoice_3.id, quantity: 50, unit_price: 200)
     @transaction_5 = create(:transaction, invoice_id: @invoice_3.id)
     @transaction_6 = create(:transaction, invoice_id: @invoice_3.id)
   end
@@ -179,14 +179,12 @@ describe "Merchants API" do
 
     expect(response).to be_successful
     expect(merchants.count).to eq(number)
-    expect(merchants.first["id"].to_i).to eq(@merchant_1.id)
-    expect(merchants.last["id"].to_i).to eq(@merchant_2.id)
+    expect(merchants.first["id"].to_i).to eq(@merchant_3.id)
+    expect(merchants.last["id"].to_i).to eq(@merchant_1.id)
   end
 
   it "can return top merchants with x number of items sold" do
     number = 2
-    create_list(:item, 3, merchant_id: @merchant_1.id, unit_price: 100)
-    create(:item, merchant_id: @merchant_3.id, unit_price: 100)
 
     get "/api/v1/merchants/most_items?quantity=#{number}"
 
@@ -194,7 +192,7 @@ describe "Merchants API" do
 
     expect(response).to be_successful
     expect(merchants.count).to eq(number)
-    expect(merchants.first["id"].to_i).to eq(@merchant_1.id)
-    expect(merchants.last["id"].to_i).to eq(@merchant_3.id)
+    expect(merchants.first["id"].to_i).to eq(@merchant_3.id)
+    expect(merchants.last["id"].to_i).to eq(@merchant_1.id)
   end
 end
