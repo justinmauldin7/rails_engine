@@ -212,10 +212,10 @@ describe "Merchants API" do
 
     get "/api/v1/merchants/#{id}/revenue"
 
-    total_revenue = JSON.parse(response.body)["data"]
+    revenue = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(total_revenue["attributes"]["total_revenue"].to_i).to eq(386)
+    expect(revenue["attributes"]["revenue"].to_i).to eq(386)
   end
 
   it "can return total revenue for single merchant for specific date" do
@@ -224,9 +224,9 @@ describe "Merchants API" do
 
     get "/api/v1/merchants/#{id}/revenue?date=#{date}"
 
-    total_revenue = JSON.parse(response.body)["data"]
+    revenue = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(total_revenue["attributes"]["total_revenue"].to_i).to eq(284.00)
+    expect(revenue["attributes"]["revenue"].to_i).to eq(284.00)
   end
 end
