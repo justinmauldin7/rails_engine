@@ -55,6 +55,6 @@ class Merchant < ApplicationRecord
             .where('invoices.merchant_id = ?', self.id)
             .group('customers.id')
             .order('transaction_count DESC')
-            .limit(1)
+            .limit(1)[0]
   end
 end
