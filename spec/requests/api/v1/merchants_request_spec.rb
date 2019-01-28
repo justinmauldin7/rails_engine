@@ -155,7 +155,7 @@ describe "Merchants API" do
     expect(merchants[2]["id"].to_i).to eq(merchant_3.id)
   end
 
-  xit "can reutn list of items for one merchant" do
+  it "can reutn list of items for one merchant" do
     item_2 = create(:item, merchant_id: @merchant_1.id, unit_price: 100)
     item_3 = create(:item, merchant_id: @merchant_1.id, unit_price: 100)
 
@@ -230,7 +230,7 @@ describe "Merchants API" do
     expect(revenue["attributes"]["revenue"].to_i).to eq(284.00)
   end
 
-  it "can finde the customer that has the most successful transactions for a merchant" do
+  it "can find the customer that has the most successful transactions for a merchant" do
     invoice_2 = create(:invoice, merchant_id: @merchant_3.id, customer_id: @customer_2.id, created_at: "2012-03-27 14:54:00 UTC")
     invoice_item_4 = create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_2.id, quantity: 1, unit_price: 100)
     invoice_item_5 = create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_2.id, quantity: 5, unit_price: 200)
@@ -247,8 +247,8 @@ describe "Merchants API" do
     customer = JSON.parse(response.body)["data"]
 
     expect(response).to be_successful
-    expect(customer[0]["attributes"]["id"].to_i).to eq(@customer_2.id)
-    expect(customer[0]["attributes"]["first_name"]).to eq(@customer_2.first_name)
-    expect(customer[0]["attributes"]["last_name"]).to eq(@customer_2.last_name)
+    expect(customer["attributes"]["id"].to_i).to eq(@customer_2.id)
+    expect(customer["attributes"]["first_name"]).to eq(@customer_2.first_name)
+    expect(customer["attributes"]["last_name"]).to eq(@customer_2.last_name)
   end
 end

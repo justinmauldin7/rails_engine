@@ -131,9 +131,9 @@ RSpec.describe Merchant, type: :model do
 
       customer = @merchant_3.favorite_customer
 
-      expect(customer[0].id).to eq(@customer_2.id)
-      expect(customer[0].first_name).to eq(@customer_2.first_name)
-      expect(customer[0].last_name).to eq(@customer_2.last_name)
+      expect(customer.id).to eq(@customer_2.id)
+      expect(customer.first_name).to eq(@customer_2.first_name)
+      expect(customer.last_name).to eq(@customer_2.last_name)
     end
   end
 end
