@@ -269,4 +269,31 @@ describe "Merchants API" do
     expect(customer["attributes"]["first_name"]).to eq(@customer_2.first_name)
     expect(customer["attributes"]["last_name"]).to eq(@customer_2.last_name)
   end
+
+  it "can find all customers with pending invoices for a single merchant" do
+    invoice_3 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_1.id)
+    create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_3.id, quantity: 1, unit_price: 100)
+    create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_3.id, quantity: 10, unit_price: 200)
+    create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_3.id, quantity: 10, unit_price: 300)
+    create(:transaction, invoice_id: invoice_3.id, result: 'failed')
+    create(:transaction, invoice_id: invoice_3.id, result: 'failed')
+
+    invoice_4 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_2.id, created_at: "2012-03-27 14:54:00 UTC")
+    create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_4.id, quantity: 1, unit_price: 100)
+    create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_4.id, quantity: 5, unit_price: 200)
+    create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_4.id, quantity: 10, unit_price: 300)
+    create(:transaction, invoice_id: invoice_4.id, result: 'failed')
+    create(:transaction, invoice_id: invoice_4.id, result: 'failed')
+
+    id = @merchant_1.id
+
+    get "/api/v1/merchants/#{id}/customers_with_pending_invoices"
+
+    customers = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(customers.count).to eq(2)
+    expect(customers.first["id"].to_i).to eq(@customer_1.id)
+    expect(customers.last["id"].to_i).to eq(@customer_2.id)
+  end
 end
