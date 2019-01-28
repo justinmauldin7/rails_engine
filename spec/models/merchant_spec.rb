@@ -118,5 +118,22 @@ RSpec.describe Merchant, type: :model do
 
       expect(total_revenue/100.0).to eq(284.00)
     end
+
+    it ".favorite_customer" do
+      invoice_2 = create(:invoice, merchant_id: @merchant_3.id, customer_id: @customer_2.id, created_at: "2012-03-27 14:54:00 UTC")
+      invoice_item_4 = create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_2.id, quantity: 1, unit_price: 100)
+      invoice_item_5 = create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_2.id, quantity: 5, unit_price: 200)
+      invoice_item_6 = create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_2.id, quantity: 10, unit_price: 300)
+      transaction_3 = create(:transaction, invoice_id: invoice_2.id)
+      transaction_4 = create(:transaction, invoice_id: invoice_2.id)
+      transaction_5 = create(:transaction, invoice_id: invoice_2.id)
+      transaction_6 = create(:transaction, invoice_id: invoice_2.id)
+
+      customer = @merchant_3.favorite_customer
+
+      expect(customer[0].id).to eq(@customer_2.id)
+      expect(customer[0].first_name).to eq(@customer_2.first_name)
+      expect(customer[0].last_name).to eq(@customer_2.last_name)
+    end
   end
 end
