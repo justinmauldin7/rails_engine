@@ -170,6 +170,24 @@ describe "Merchants API" do
     expect(items[2]["id"].to_i).to eq(item_3.id)
   end
 
+  it "can reutn list of invoices for one merchant" do
+    invoice_2 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_1.id)
+    create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_2.id, quantity: 1, unit_price: 100)
+    create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_2.id, quantity: 10, unit_price: 200)
+    create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_2.id, quantity: 10, unit_price: 300)
+    create(:transaction, invoice_id: invoice_2.id)
+    create(:transaction, invoice_id: invoice_2.id)
+
+    get "/api/v1/merchants/#{@merchant_1.id}/invoices"
+
+    invoices = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(invoices.count).to eq(2)
+    expect(invoices[0]["id"].to_i).to eq(@invoice_1.id)
+    expect(invoices[1]["id"].to_i).to eq(invoice_2.id)
+  end
+
   it "can return top merchants with most revenue" do
     number = 2
 
