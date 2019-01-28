@@ -155,7 +155,7 @@ describe "Merchants API" do
     expect(merchants[2]["id"].to_i).to eq(merchant_3.id)
   end
 
-  xit "can reutn list of items for one merchant" do
+  it "can reutn list of items for one merchant" do
     item_2 = create(:item, merchant_id: @merchant_1.id, unit_price: 100)
     item_3 = create(:item, merchant_id: @merchant_1.id, unit_price: 100)
 
@@ -165,9 +165,27 @@ describe "Merchants API" do
 
     expect(response).to be_successful
     expect(items.count).to eq(3)
-    expect(items[0]["id"].to_i).to eq(item_1.id)
+    expect(items[0]["id"].to_i).to eq(@item_1.id)
     expect(items[1]["id"].to_i).to eq(item_2.id)
     expect(items[2]["id"].to_i).to eq(item_3.id)
+  end
+
+  it "can reutn list of invoices for one merchant" do
+    invoice_2 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_1.id)
+    create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_2.id, quantity: 1, unit_price: 100)
+    create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_2.id, quantity: 10, unit_price: 200)
+    create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_2.id, quantity: 10, unit_price: 300)
+    create(:transaction, invoice_id: invoice_2.id)
+    create(:transaction, invoice_id: invoice_2.id)
+
+    get "/api/v1/merchants/#{@merchant_1.id}/invoices"
+
+    invoices = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(invoices.count).to eq(2)
+    expect(invoices[0]["id"].to_i).to eq(@invoice_1.id)
+    expect(invoices[1]["id"].to_i).to eq(invoice_2.id)
   end
 
   it "can return top merchants with most revenue" do
@@ -205,5 +223,77 @@ describe "Merchants API" do
 
     expect(response).to be_successful
     expect(total_revenue["attributes"]["total_revenue"].to_i).to eq(284.00)
+  end
+
+  it "can return total revenue for single merchant" do
+    id = @merchant_1.id
+
+    get "/api/v1/merchants/#{id}/revenue"
+
+    revenue = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(revenue["attributes"]["revenue"].to_i).to eq(386)
+  end
+
+  it "can return total revenue for single merchant for specific date" do
+    id = @merchant_1.id
+    date = "2012-03-27"
+
+    get "/api/v1/merchants/#{id}/revenue?date=#{date}"
+
+    revenue = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(revenue["attributes"]["revenue"].to_i).to eq(284.00)
+  end
+
+  it "can find the customer that has the most successful transactions for a merchant" do
+    invoice_2 = create(:invoice, merchant_id: @merchant_3.id, customer_id: @customer_2.id, created_at: "2012-03-27 14:54:00 UTC")
+    invoice_item_4 = create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_2.id, quantity: 1, unit_price: 100)
+    invoice_item_5 = create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_2.id, quantity: 5, unit_price: 200)
+    invoice_item_6 = create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_2.id, quantity: 10, unit_price: 300)
+    transaction_3 = create(:transaction, invoice_id: invoice_2.id)
+    transaction_4 = create(:transaction, invoice_id: invoice_2.id)
+    transaction_5 = create(:transaction, invoice_id: invoice_2.id)
+    transaction_6 = create(:transaction, invoice_id: invoice_2.id)
+
+    id = @merchant_3.id
+
+    get "/api/v1/merchants/#{id}/favorite_customer"
+
+    customer = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(customer["attributes"]["id"].to_i).to eq(@customer_2.id)
+    expect(customer["attributes"]["first_name"]).to eq(@customer_2.first_name)
+    expect(customer["attributes"]["last_name"]).to eq(@customer_2.last_name)
+  end
+
+  it "can find all customers with pending invoices for a single merchant" do
+    invoice_3 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_1.id)
+    create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_3.id, quantity: 1, unit_price: 100)
+    create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_3.id, quantity: 10, unit_price: 200)
+    create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_3.id, quantity: 10, unit_price: 300)
+    create(:transaction, invoice_id: invoice_3.id, result: 'failed')
+    create(:transaction, invoice_id: invoice_3.id, result: 'failed')
+
+    invoice_4 = create(:invoice, merchant_id: @merchant_1.id, customer_id: @customer_2.id, created_at: "2012-03-27 14:54:00 UTC")
+    create(:invoice_item, item_id: @item_1.id, invoice_id: invoice_4.id, quantity: 1, unit_price: 100)
+    create(:invoice_item, item_id: @item_2.id, invoice_id: invoice_4.id, quantity: 5, unit_price: 200)
+    create(:invoice_item, item_id: @item_3.id, invoice_id: invoice_4.id, quantity: 10, unit_price: 300)
+    create(:transaction, invoice_id: invoice_4.id, result: 'failed')
+    create(:transaction, invoice_id: invoice_4.id, result: 'failed')
+
+    id = @merchant_1.id
+
+    get "/api/v1/merchants/#{id}/customers_with_pending_invoices"
+
+    customers = JSON.parse(response.body)["data"]
+
+    expect(response).to be_successful
+    expect(customers.count).to eq(2)
+    expect(customers.first["id"].to_i).to eq(@customer_1.id)
+    expect(customers.last["id"].to_i).to eq(@customer_2.id)
   end
 end
