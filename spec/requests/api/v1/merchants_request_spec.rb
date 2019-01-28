@@ -165,7 +165,7 @@ describe "Merchants API" do
 
     expect(response).to be_successful
     expect(items.count).to eq(3)
-    expect(items[0]["id"].to_i).to eq(item_1.id)
+    expect(items[0]["id"].to_i).to eq(@item_1.id)
     expect(items[1]["id"].to_i).to eq(item_2.id)
     expect(items[2]["id"].to_i).to eq(item_3.id)
   end
